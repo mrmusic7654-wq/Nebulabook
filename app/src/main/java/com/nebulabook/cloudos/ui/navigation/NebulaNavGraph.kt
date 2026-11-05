@@ -32,6 +32,6 @@ private data class Tab(val route:String,val label:String,val icon: androidx.comp
             composable("vault") { VaultSyncScreen(vm::readVault,vm::saveVault,vm::publicKey,vm::generateKey,{vm.notice("Verification is available after saving a token; provider API calls are not run automatically.")}) }
             composable("workspace") { LaptopWorkspaceScreen(state.simulation,state.telemetry,state.engine,state.trackpad,state.ribbon,state.workspaceWindow,vm::toggleTrackpad,vm::toggleRibbon,{vm.closeLid();nav.navigate("home"){popUpTo("home"){inclusive=false};launchSingleTop=true}},vm::chooseWindow,vm::notice) }
         }
-    } }
+    }
     if(bootSheet && route!="workspace") BootSequenceSheet(state.logs) { bootSheet=false }
 }
