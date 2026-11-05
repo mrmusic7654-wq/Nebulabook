@@ -24,7 +24,7 @@ GitHub Actions runs the debug compile and unit tests, then uploads the APK artif
 ## Connect Google Cloud Shell
 
 1. Generate a keypair in Settings.
-2. Paste a current user OAuth access token with Cloud Shell API authorization (the `cloud-platform` scope) into **Google OAuth Access Token**. Token pasting is currently supported; in-app Google sign-in and refresh are not yet implemented.
+2. Paste a current user OAuth access token with Cloud Shell API authorization (the `cloud-platform` scope) into **Google OAuth Access Token**. Token pasting is currently supported; in-app Google sign-in and refresh are not yet implemented. See the [Cloud Shell REST API](https://cloud.google.com/shell/docs/reference/rest) and its [environment resource](https://cloud.google.com/shell/docs/reference/rest/v1/users.environments).
 3. Tap **Start / Connect Google Cloud Shell**. NebulaBook calls the Cloud Shell REST API, registers the public key, starts the environment if needed, and reads the actual SSH host, port, username, and running state from the environment response.
 4. For safety, the first connection pauses until the host key is trusted. From a trusted computer, run the `ssh-keyscan -p PORT HOST` command shown by the app, verify the fingerprint independently, then save the resulting line under **SSH known hosts**.
 5. Tap the Cloud Shell connect action again. NebulaBook then establishes verified SSH, provisions Webtop if the host supports it, and begins reporting actual SSH telemetry.
@@ -36,7 +36,7 @@ Cloud Shell's lifecycle remains managed by Google; closing NebulaBook's desktop 
 1. In Settings, paste a fine-grained GitHub token with Codespaces read/write permission and press **Verify token & load Codespaces**.
 2. Open **Codespaces**, select an existing Codespace, and review the current machine and available machine types returned by GitHub.
 3. **Start · 2 Core** selects an available 2-vCPU machine from GitHub's machine API, applies it to a stopped Codespace if needed, starts it, and polls its actual state. If the Codespace is already running on a different size, stop it first. NebulaBook does not silently fall back to a larger machine.
-4. **Open Codespace in browser** opens GitHub's returned editor URL. This is Codespaces editor access—not an SSH desktop connection. A PAT alone does not give the app a Codespace port-forward tunnel or Codespace-side `GITHUB_TOKEN`.
+4. **Open Codespace in browser** opens GitHub's returned editor URL. This is Codespaces editor access—not an SSH desktop connection. A PAT alone does not give the app a Codespace port-forward tunnel or Codespace-side `GITHUB_TOKEN`. See GitHub's [machine type API](https://docs.github.com/en/rest/codespaces/machines) and [port-forwarding guide](https://docs.github.com/en/codespaces/developing-in-a-codespace/forwarding-ports-in-your-codespace).
 
 RAM and machine-storage figures shown for Codespaces come from GitHub's machine metadata. Confirm account billing and included usage in GitHub; Codespaces are not guaranteed to be free. Direct Codespaces Webtop streaming, automatic Codespace creation, and port-forward authentication are not implemented.
 
