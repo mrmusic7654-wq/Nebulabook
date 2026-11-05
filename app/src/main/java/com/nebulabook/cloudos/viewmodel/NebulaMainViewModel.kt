@@ -129,8 +129,7 @@ class NebulaMainViewModel(app: Application) : AndroidViewModel(app) {
     fun startCodespace(name:String) {
         val token=vault.get("github_pat_token").trim()
         if(token.isBlank()) { notice("Verify your GitHub token first."); return }
-        val selected=_state.value.codespaces.firstOrNull { it.name==name }
-        if(selected==null) { notice("Refresh GitHub Codespaces and select a workspace."); return }
+        val selected=_state.value.codespaces.firstOrNull { it.name==name } ?: run { notice("Refresh GitHub Codespaces and select a workspace."); return }
         val twoCore=_state.value.codespaceMachines.filter { it.cpus==2 && it.memoryBytes>0 && it.storageBytes>0 }.minByOrNull { it.memoryBytes }
         if(twoCore==null) { notice("GitHub reports no available 2-core machine for this Codespace. No larger machine was selected."); return }
         if(selected.state.equals("Available",true) && selected.machineName!=twoCore.name) { notice("This Codespace is running on another machine type. Stop it first; then start it to request the available 2-core machine."); return }
