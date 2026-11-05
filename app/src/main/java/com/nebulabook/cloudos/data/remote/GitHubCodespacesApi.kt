@@ -5,6 +5,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class GitHubCodespacesApi(private val client: OkHttpClient=OkHttpClient()) {
+    fun user(token: String): String = call("GET", "https://api.github.com/user", token)
     fun list(token: String): String = call("GET", "https://api.github.com/user/codespaces", token)
     fun start(token: String, name: String): String = call("POST", "https://api.github.com/user/codespaces/${name.encodeURLPath()}/start", token)
     fun stop(token: String, name: String): String = call("POST", "https://api.github.com/user/codespaces/${name.encodeURLPath()}/stop", token)

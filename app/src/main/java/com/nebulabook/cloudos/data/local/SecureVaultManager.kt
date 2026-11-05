@@ -18,8 +18,6 @@ class SecureVaultManager(context: Context) {
 
     fun get(key: String): String = prefs.getString(key, "") ?: ""
     fun put(key: String, value: String) { prefs.edit().putString(key, value).apply() }
-    fun isSimulation(): Boolean = prefs.getBoolean("simulation", true)
-    fun setSimulation(value: Boolean) { prefs.edit().putBoolean("simulation", value).apply() }
     fun publicKey(): String = get("ssh_public_key")
     fun generateSshKeyPair(): String {
         val pair = KeyPair.genKeyPair(JSch(), KeyPair.RSA, 4096)

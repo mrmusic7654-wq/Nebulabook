@@ -1,17 +1,28 @@
-# NebulaBook OS
+# NebulaBook
 
-NebulaBook is an Android/Jetpack Compose prototype for a mobile cloud-desktop control plane. It launches in an interactive simulation so the navigation, app deck, Blender-style viewport, shortcut ribbon, trackpad controls, quota dashboard, credential vault, and render queue can be explored without creating cloud resources.
+NebulaBook is an Android/Jetpack Compose SSH desktop client. It does not render placeholder quotas, telemetry, or fake remote-desktop sessions. Home telemetry is shown only after a verified SSH connection and is sampled from the connected host. The App Deck sends commands over that active SSH session; GitHub and Kaggle status is displayed only after successful provider API responses.
 
 ## Build
 
-Open this repository in Android Studio (JDK 17, Android SDK 35) and run the `app` configuration, or run `./gradlew :app:assembleDebug`. The checked-in Gradle 8.10.2 wrapper downloads Gradle on first use. GitHub Actions compiles the debug APK, runs the unit-test task, and publishes `app-debug.apk` as a workflow artifact. This sandbox does not include a JDK/Android SDK, so an Android compile could not be run locally here.
+Requires JDK 17 and Android SDK 35. Build with Android Studio or run:
 
-## Important live-mode limitations
+```sh
+./gradlew :app:assembleDebug
+./gradlew :app:testDebugUnitTest
+```
 
-- Simulation mode is explicit and performs no network requests, installs, cloud rendering, or quota consumption. Figures shown in the dashboard are illustrative, not account entitlements.
-- Provider APIs, plan limits, machine availability, and billing are controlled by Google, GitHub, and Kaggle. Verify current terms and limits with each provider.
-- A bearer token alone does not provide generic SSH connection details. Google Cloud Shell's environment API does not establish this app's assumed SSH host/port/username contract. GitHub Codespaces likewise requires an actual codespace and its supported connection workflow. The UI therefore avoids pretending that selecting Live mode started a VM.
-- The low-level HTTP/SSH utilities and WebView bridge are building blocks; production live startup still needs provider-specific supported auth/host discovery, Android OAuth configuration, host-key verification, secure secret lifecycle handling, and end-to-end testing. The demo renderer intentionally does not submit Kaggle jobs or claim GPU access.
-- A wake lock is held only while the foreground session service is active. Android notification runtime permission and foreground-service policy requirements must be handled in a production release.
+The GitHub Actions workflow performs these checks and uploads a debug APK artifact.
 
-Secrets use Android encrypted shared preferences where the platform supports them, with an explicitly documented unencrypted emulator fallback. Do not use the fallback for real credentials.
+## Connect a real SSH desktop
+
+1. Open Vault and generate an RSA-4096 keypair.
+2. Add the displayed public key to the target Linux account's `~/.ssh/authorized_keys`.
+3. Save the SSH hostname, port, username, and a verified `known_hosts` entry for that host. The app enforces strict host-key checking; do not paste an unverified fingerprint.
+4. Tap **Connect to SSH desktop**. The app runs its Webtop/Docker provisioning script on that host, forwards local port 3000, and then polls CPU, RAM, and round-trip time using SSH commands.
+5. Closing the session stops the Webtop container and closes the SSH tunnel.
+
+This is a generic SSH host workflow. A GitHub token is used to verify the GitHub account and list Codespaces; it does not yield a Codespace SSH endpoint. Cloud Shell, direct Codespaces desktop startup, Rclone configuration upload, and Kaggle render submission are not claimed as complete integrations. Kaggle status lookup is a live read-only API call for an existing kernel. Provider quotas, GPU availability, billing, and free-tier terms are not estimated by the app.
+
+## Security notes
+
+Secrets use Android EncryptedSharedPreferences where available. The emulator fallback is not encrypted and must not be used with production credentials. SSH host keys must be verified out of band before adding them to the vault. Review remote provisioning commands and provider terms before use.
